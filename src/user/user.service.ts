@@ -3,13 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
-
-// define the response type
-export interface UserResponse {
-  status: HttpStatus;
-  message: string;
-  data?: UserEntity;
-}
+import { UserResponse } from '../auth/auth.controller';
 
 @Injectable()
 export class UserService {
@@ -17,6 +11,26 @@ export class UserService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
+
+  async findOneById(id: number): Promise<UserResponse> {
+    const foundUser = this.userRepository.findOne({ where: { id: id } });
+
+    if (!foundUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          message: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'User found',
+      data: (await foundUser).user_name,
+    };
+  }
 
   async update(
     id: number,
