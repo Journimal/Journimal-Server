@@ -3,6 +3,7 @@ import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
+import { AuthCredentialLoginDto } from './dto/auth-credential-login.dto';
 import { UserResponse } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -47,5 +48,34 @@ export class AuthService {
       message: 'User created successfully',
       data: await this.userRepository.save(newUser),
     };
+  }
+
+  // log in method
+  async login(
+    authCredentialLoginDto: AuthCredentialLoginDto,
+  ): Promise<{ accessToken: string }> {
+    const { user_id, user_pw } = authCredentialLoginDto;
+
+    const user = await this.userRepository.findOne({
+      where: { user_id: user_id },
+    });
+
+    // comparing current user and saved user
+    const savedUser = await bcrypt.compare(user_pw, user.user_pw);
+    if (user && savedUser) {
+      // creating user token(JWT)
+      const Payload = { user_id };
+      const accessToken = await this.jwtService.sign(Payload);
+
+      return { accessToken };
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          message: 'Invalid credentials',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
   }
 }
