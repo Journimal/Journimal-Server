@@ -2,25 +2,21 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 
 // define the response type
 export interface UserResponse {
   status: HttpStatus;
   message: string;
-  data?: User;
+  data?: UserEntity;
 }
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
   ) {}
-
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
-  }
 
   async update(
     id: number,
