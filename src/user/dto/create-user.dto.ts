@@ -1,6 +1,10 @@
 import { IsString, IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
+  @IsInt()
+  @IsNotEmpty()
+  readonly id: number;
+
   @IsString()
   @IsNotEmpty()
   readonly user_id: string;
@@ -17,13 +21,4 @@ export class CreateUserDto {
 
   @IsInt()
   readonly completed_mission: number;
-
-  @IsInt()
-  readonly en_animal_id: number;
-
-  @IsInt()
-  readonly vu_animal_id: number;
-
-  @IsInt()
-  readonly ce_animal_id: number;
 }

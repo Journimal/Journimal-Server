@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UserResponse } from '../auth/auth.controller';
 
@@ -12,6 +12,7 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
+  // find username by id
   async findOneById(id: number): Promise<UserResponse> {
     const foundUser = this.userRepository.findOne({ where: { id: id } });
 
@@ -32,31 +33,17 @@ export class UserService {
     };
   }
 
-  async update(
+  // update username by id
+  async updateUsername(
     id: number,
-    userCreateDto: CreateUserDto,
+    updateUserDto: UpdateUserDto,
   ): Promise<UserResponse> {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { user_id: userCreateDto.user_id },
-      });
+    console.log();
+    const user = await this.userRepository.update(id, {
+      user_name: updateUserDto.user_name,
+    });
 
-      if (!user) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            message: 'User not found',
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return {
-        status: HttpStatus.OK,
-        message: 'User updated successfully',
-      };
-    } catch (err) {
-      console.log(err);
+    if (!user) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
@@ -65,5 +52,10 @@ export class UserService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'User updated successfully',
+    };
   }
 }
