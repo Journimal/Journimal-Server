@@ -1,18 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { AuthCredentialLoginDto } from './dto/auth-credential-login.dto';
-import { UserResponse } from '../user/user.service';
+import { UserResponse } from './auth.controller';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
   ) {}
 

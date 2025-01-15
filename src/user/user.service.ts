@@ -1,52 +1,22 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
-
-// define the response type
-export interface UserResponse {
-  status: HttpStatus;
-  message: string;
-  data?: User;
-}
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
+import { UserResponse } from '../auth/auth.controller';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
-  }
+  // find username by id
+  async findOneById(id: number): Promise<UserResponse> {
+    const foundUser = this.userRepository.findOne({ where: { id: id } });
 
-  async update(
-    id: number,
-    userCreateDto: CreateUserDto,
-  ): Promise<UserResponse> {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { user_id: userCreateDto.user_id },
-      });
-
-      if (!user) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            message: 'User not found',
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return {
-        status: HttpStatus.OK,
-        message: 'User updated successfully',
-      };
-    } catch (err) {
-      console.log(err);
+    if (!foundUser) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
@@ -55,5 +25,37 @@ export class UserService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'User found',
+      data: (await foundUser).user_name,
+    };
+  }
+
+  // update username by id
+  async updateUsername(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponse> {
+    console.log();
+    const user = await this.userRepository.update(id, {
+      user_name: updateUserDto.user_name,
+    });
+
+    if (!user) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          message: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'User updated successfully',
+    };
   }
 }
