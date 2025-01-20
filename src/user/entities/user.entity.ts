@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { UserMissionEntity } from '../../mission/entities/user-missions.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class UserEntity {
@@ -19,4 +20,7 @@ export class UserEntity {
 
   @Column({ default: 0 })
   completed_mission: number;
+
+  @OneToMany(() => UserMissionEntity, (userMission) => userMission.user)
+  userMissions: UserMissionEntity[];
 }
