@@ -7,9 +7,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MissionModule } from './mission/mission.module';
-import { UserEntity } from './user/entities/user.entity';
-import { MissionEntity } from './mission/entities/mission.entity';
-import { UserMissionEntity } from './mission/entities/user-missions.entity';
+import { TripModule } from './trip/trip.module';
 
 @Module({
   imports: [
@@ -23,13 +21,14 @@ import { UserMissionEntity } from './mission/entities/user-missions.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [UserEntity, MissionEntity, UserMissionEntity],
+      entities: [__dirname + '/../**/*.entity.js'],
       synchronize: true,
       logging: true,
     }),
     UserModule,
     AuthModule,
     MissionModule,
+    TripModule,
   ],
   controllers: [AppController],
   providers: [AppService],
