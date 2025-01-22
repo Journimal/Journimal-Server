@@ -3,7 +3,7 @@ import { UserMissionEntity } from '../entities/user-missions.entity';
 
 export enum MissionLevel {
   VU = 1,
-  EU = 2,
+  EN = 2,
   CE = 3,
 }
 
